@@ -2,19 +2,21 @@ import Link from "next/link";
 import { CITIES } from "../data/cities";
 
 export const metadata = {
-  title: "JobHook Jobs | Browse Jobs by City",
-  description: "Browse JobHook jobs by city in Namibia. Find jobs hiring now and entry-level opportunities.",
+  title: "Jobs in Namibia | JobHook",
+  description:
+    "Find the latest jobs in Namibia including Windhoek, Walvis Bay, Swakopmund and Oshakati. Security jobs, driver jobs, cleaning jobs and more on JobHook.",
 };
 
 export default function JobsHome() {
   return (
     <main style={{ padding: 30, fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 40, marginBottom: 10 }}>JobHook Jobs</h1>
+      <h1 style={{ fontSize: 40, marginBottom: 10 }}>Jobs in Namibia</h1>
 
       <p style={{ fontSize: 18, maxWidth: 800, lineHeight: 1.6 }}>
-        Welcome to the JobHook jobs hub. This is where Google will discover our job pages.
-        Choose a city or category below — these pages are built for fast searching and SEO.
-      </p>
+Find the latest job opportunities across Namibia. Browse jobs in Windhoek,
+Walvis Bay, Swakopmund, Oshakati and other cities. JobHook connects job
+seekers with employers hiring now.
+</p>
 
       <div style={{ marginTop: 25, display: "flex", gap: 12, flexWrap: "wrap" }}>
   {CITIES.map((city) => (
