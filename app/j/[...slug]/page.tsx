@@ -12,7 +12,7 @@ export default async function JobRedirectPage({
     redirect("/");
   }
 
-  const collection = slug[0];
+  const collection = String(slug[0] || "").toLowerCase();
   const jobId = slug[1];
 
   if (collection !== "jobs" || !jobId) {
@@ -20,14 +20,18 @@ export default async function JobRedirectPage({
   }
 
   const db = getDb();
-  const jobSnap = await db.collection("jobs").doc(jobId).get();
+  const jobSnap = await db.collection("Jobs").doc(jobId).get();
 
   if (!jobSnap.exists) {
     redirect("/");
   }
 
-  const job = jobSnap.data();
-  const city = String(job?.jobCity || "").trim().toLowerCase().replace(/\s+/g, "-");
+  const job = jobSnap.data() as any;
+
+  const city = String(job?.city || job?.jobCity || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
 
   if (!city) {
     redirect("/jobs");
