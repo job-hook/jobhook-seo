@@ -1,19 +1,21 @@
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/firebaseAdmin";
 
-export default async function JobRedirectPage({
-  params,
-}: {
-  params: { slug: string[] };
-}) {
-  const slug = params.slug;
+type PageProps = {
+  params: Promise<{
+    slug?: string[];
+  }>;
+};
 
-  if (!slug || slug.length < 2) {
+export default async function JobRedirectPage({ params }: PageProps) {
+  const { slug = [] } = await params;
+
+  if (slug.length < 2) {
     redirect("/");
   }
 
   const collection = String(slug[0] || "").toLowerCase();
-  const jobId = slug[1];
+  const jobId = String(slug[1] || "");
 
   if (collection !== "jobs" || !jobId) {
     redirect("/");
@@ -26,8 +28,7 @@ export default async function JobRedirectPage({
     redirect("/");
   }
 
-  const job = jobSnap.data() as any;
-
+  const job = jobSnap.data() as Record<string, unknown>;
   const city = String(job?.city || job?.jobCity || "")
     .trim()
     .toLowerCase()
