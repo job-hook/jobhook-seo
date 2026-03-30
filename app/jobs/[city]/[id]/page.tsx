@@ -79,7 +79,7 @@ export default async function JobPage({ params }: PageProps) {
     fontWeight: 600,
   }}
 >
-  Open in JobHook App
+  Apply Now
 </a>
 </p>
   
