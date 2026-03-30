@@ -65,7 +65,7 @@ export default async function JobPage({ params }: PageProps) {
       
       <p style={{ marginTop: 20 }}>
   <a
-    href={`https://seo.job-hook.com/j/Jobs/${params.id}`}
+    href={`https://job-hook.com/jobs/${params.id}`}
     style={{
       display: "inline-block",
       padding: "12px 20px",
