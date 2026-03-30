@@ -62,6 +62,23 @@ export default async function JobPage({ params }: PageProps) {
       <p>
         <b>Salary:</b> {salary}
       </p>
+      
+      <p style={{ marginTop: 20 }}>
+  <a
+    href={`https://seo.job-hook.com/j/Jobs/${params.id}`}
+    style={{
+      display: "inline-block",
+      padding: "12px 20px",
+      background: "#8b7cf6",
+      color: "#fff",
+      textDecoration: "none",
+      borderRadius: "10px",
+      fontWeight: 600,
+    }}
+  >
+    Open in JobHook App
+  </a>
+</p>
 
       <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 18 }}>
         {description}
