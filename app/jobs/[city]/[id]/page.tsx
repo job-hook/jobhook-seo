@@ -1,190 +1,76 @@
-import type { Metadata } from "next";
-
-const baseUrl = process.env.SITE_URL || "http://localhost:3000";
+import { notFound } from "next/navigation";
+import { getDb } from "@/lib/firebaseAdmin";
 
 type PageProps = {
   params: Promise<{ city: string; id: string }>;
 };
 
-function prettyCity(slug: string) {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export default async function JobPage({ params }: PageProps) {
   const { city, id } = await params;
 
-  const citySlug = (city || "").toLowerCase();
-  const cityName = citySlug ? prettyCity(citySlug) : "Unknown City";
+  const db = getDb();
+  const doc = await db.collection("Jobs").doc(id).get();
 
-  const title = `Job ${id} in ${cityName} | JobHook`;
-  const description = `View job ${id} in ${cityName}, Namibia. Apply on JobHook.`;
+  if (!doc.exists) return notFound();
 
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `${baseUrl}/jobs/${citySlug}/${id}`,
-    },
-    openGraph: {
-      title,
-      description,
-      url: `${baseUrl}/jobs/${citySlug}/${id}`,
-      siteName: "JobHook",
-      type: "website",
-    },
-  };
-}
+  const job = doc.data() as any;
 
-export default async function JobDetailsPage({ params }: PageProps) {
-  const { city, id } = await params;
+  if (job?.status && job.status !== "approved") return notFound();
+  if (job?.approved === false) return notFound();
 
-  const baseUrl = process.env.SITE_URL || "http://localhost:3000";
-  const citySlug = (city || "").toLowerCase();
-  const cityName = citySlug ? prettyCity(citySlug) : "Unknown City";
+  const title = job?.title || "Job Opportunity";
+  const company = job?.companyName || job?.company || "Company";
+  const description = job?.description || "No description provided.";
+  const location = job?.city || job?.jobCity || city;
+  const salary = job?.salary || "Not specified";
+  const jobType = job?.jobType || "Not specified";
 
-  // ✅ Placeholder job data for now (later we replace this with real DB data)
-  const job = {
-    
-    id,
-    title: `Sample Job Title ${id}`,
-    description:
-      "This is a sample job description. Later we will load real jobs from your database.",
-    companyName: "JobHook Demo Company",
-    employmentType: "FULL_TIME",
-    datePosted: new Date().toISOString(),
-    validThrough: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(), // +30 days
-    streetAddress: "Independence Avenue",
-    addressLocality: cityName,
-    addressRegion: "Khomas",
-    postalCode: "9000",
-    addressCountry: "NA",
-    salaryCurrency: "NAD",
-    salaryValue: 8000,
-  };
-
-      const datePostedISO = new Date(job.datePosted).toISOString(); // from DB (recommended)
-const validThroughISO = new Date(
-  new Date(job.datePosted).getTime() + 30 * 24 * 60 * 60 * 1000
-).toISOString();
-
-const jobPostingSchema = {
-  "@context": "https://schema.org",
-  "@type": "JobPosting",
-  title: job.title,
-  description: job.description,
-  datePosted: datePostedISO,
-  validThrough: validThroughISO, // NOT shown to users, but good for Google
-  employmentType: job.employmentType || "FULL_TIME",
-  hiringOrganization: {
-    "@type": "Organization",
-    name: job.companyName || "JobHook Employer",
-    sameAs: baseUrl,
-  },
-  jobLocation: {
-    "@type": "Place",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: cityName,
-      addressCountry: "NA",
-    },
-  },
-  identifier: {
-    "@type": "PropertyValue",
-    name: "JobHook",
-    value: String(job.id),
-  },
-  url: `${baseUrl}/jobs/${citySlug}/${job.id}`,
-};
-
-  // ✅ Google Jobs structured data
-  const jsonLd = {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: job.title,
-    description: job.description,
-    identifier: {
-      "@type": "PropertyValue",
-      name: "JobHook",
-      value: job.id,
-    },
-    datePosted: job.datePosted,
-    validThrough: job.validThrough,
-    employmentType: job.employmentType,
+    title,
+    description,
     hiringOrganization: {
       "@type": "Organization",
-      name: job.companyName,
-      sameAs: baseUrl,
+      name: company,
     },
     jobLocation: {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: job.streetAddress,
-        addressLocality: job.addressLocality,
-        addressRegion: job.addressRegion,
-        postalCode: job.postalCode,
-        addressCountry: job.addressCountry,
+        addressLocality: location,
+        addressCountry: "NA",
       },
     },
-    baseSalary: {
-      "@type": "MonetaryAmount",
-      currency: job.salaryCurrency,
-      value: {
-        "@type": "QuantitativeValue",
-        value: job.salaryValue,
-        unitText: "MONTH",
-      },
-    },
-    applicantLocationRequirements: {
-      "@type": "Country",
-      name: "Namibia",
-    },
+    datePosted:
+      job?.createdAt?.toDate?.()?.toISOString?.() ??
+      job?.postedAt?.toDate?.()?.toISOString?.() ??
+      new Date().toISOString(),
   };
 
   return (
-    <main style={{ padding: 30, fontFamily: "system-ui" }}>
-      {/* ✅ JSON-LD injected into the page */}
+    <main style={{ maxWidth: 820, margin: "40px auto", padding: 16 }}>
+      <h1>{title}</h1>
+      <p>
+        <b>{company}</b> — {location}
+      </p>
+
+      <p>
+        <b>Job Type:</b> {jobType}
+      </p>
+
+      <p>
+        <b>Salary:</b> {salary}
+      </p>
+
+      <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.6, marginTop: 18 }}>
+        {description}
+      </div>
+
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-
-      <h1 style={{ fontSize: 40, marginBottom: 10 }}>{job.title}</h1>
-      <p style={{ opacity: 0.8 }}>
-        {cityName}, Namibia • {job.employmentType.replace("_", " ")}
-      </p>
-
-      <p style={{ marginTop: 20, maxWidth: 900, lineHeight: 1.6 }}>
-        {job.description}
-      </p>
-
-      <p style={{ marginTop: 20 }}>
-        Salary: {job.salaryCurrency} {job.salaryValue}/month
-      </p>
-
-      <a
-        href={`${baseUrl}/apply/${citySlug}/${id}`}
-        style={{
-          display: "inline-block",
-          marginTop: 25,
-          padding: "12px 16px",
-          border: "1px solid #ddd",
-          borderRadius: 12,
-          textDecoration: "none",
-        }}
-      >
-        Apply Now
-      </a>
-
-      <div style={{ marginTop: 30 }}>
-        <a href={`/jobs/${citySlug}`} style={{ textDecoration: "none" }}>
-          ← Back to jobs in {cityName}
-        </a>
-      </div>
     </main>
   );
 }
