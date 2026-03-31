@@ -1,9 +1,35 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/firebaseAdmin";
 
 type PageProps = {
   params: Promise<{ city: string; id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { city, id } = await params;
+  const db = getDb();
+  const doc = await db.collection("Jobs").doc(id).get();
+
+  if (!doc.exists) {
+    return {
+      title: "Job Opportunity | JobHook",
+      description: "Find the latest job opportunities on JobHook.",
+    };
+  }
+
+  const job = doc.data() as any;
+  const title = job?.title || "Job Opportunity";
+  const company = job?.companyName || job?.company || "Company";
+  const jobCity = job?.city || job?.jobCity || city || "Namibia";
+
+  return {
+    title: `${title} in ${jobCity}, Namibia | JobHook`,
+    description: `Apply for ${title} at ${company} in ${jobCity}, Namibia. Find the latest jobs on JobHook.`,
+  };
+}
 
 export default async function JobPage({ params }: PageProps) {
   const { city, id } = await params;
