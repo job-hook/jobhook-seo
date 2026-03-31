@@ -74,8 +74,47 @@ export default async function JobPage({ params }: PageProps) {
       new Date().toISOString(),
   };
 
+  const jobStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "JobPosting",
+  title: job.title,
+  description: job.description,
+  datePosted: new Date().toISOString(),
+  employmentType: job.jobType || "FULL_TIME",
+  hiringOrganization: {
+    "@type": "Organization",
+    name: job.company,
+  },
+  jobLocation: {
+    "@type": "Place",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: location,
+      addressCountry: "NA",
+    },
+  },
+  baseSalary: {
+    "@type": "MonetaryAmount",
+    currency: "NAD",
+    value: {
+      "@type": "QuantitativeValue",
+      value: job.salary || 0,
+      unitText: "MONTH",
+    },
+  },
+}
+
   return (
-    <main style={{ maxWidth: 820, margin: "40px auto", padding: 16 }}>
+    <>
+    
+    <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(jobStructuredData),
+  }}
+/>
+  <main style={{ maxWidth: 820, margin: "40px auto", padding: 16 }}>
+
       <h1>{title}</h1>
       <p>
         <b>{company}</b> — {location}
@@ -118,5 +157,6 @@ export default async function JobPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
     </main>
+    </>
   );
 }
