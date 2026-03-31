@@ -40,7 +40,7 @@ export default function HomePage() {
         <h2>Browse Jobs by City</h2>
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "15px" }}>
-          {["Windhoek", "Walvis Bay", "Swakopmund", "Oshakati"].map((city) => (
+          {["Windhoek", "Walvis Bay", "Swakopmund", "Oshakati", "Ongwediva", "Rundu", "Katima Mulilo", "Otjiwarongo", "Okahandja", "Keetmanshoop", "Gobabis", "Mariental",].map((city) => (
             <a
               key={city}
               href={`/jobs/${city.toLowerCase().replace(" ", "-")}`}
@@ -53,6 +53,7 @@ export default function HomePage() {
                 background: "#f9f9f9",
               }}
             >
+              View All Jobs
               {city}
             </a>
           ))}
