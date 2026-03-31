@@ -9,34 +9,82 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main style={{ padding: 30, fontFamily: "system-ui", maxWidth: 1000, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 40, marginBottom: 10 }}>Find Jobs in Namibia</h1>
-
-      <p style={{ fontSize: 18, maxWidth: 800, lineHeight: 1.6 }}>
-        Find the latest jobs in Namibia. Browse opportunities in Windhoek, Walvis Bay,
-        Swakopmund, Oshakati and more. Apply easily on JobHook.
-      </p>
-
-      <div style={{ marginTop: 30 }}>
-        <h2 style={{ fontSize: 24, marginBottom: 12 }}>Browse Jobs by City</h2>
-
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Link href="/jobs/windhoek">Jobs in Windhoek</Link>
-          <Link href="/jobs/walvis-bay">Jobs in Walvis Bay</Link>
-          <Link href="/jobs/swakopmund">Jobs in Swakopmund</Link>
-          <Link href="/jobs/oshakati">Jobs in Oshakati</Link>
-          <Link href="/jobs">All Jobs in Namibia</Link>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 40 }}>
-        <h2 style={{ fontSize: 24, marginBottom: 12 }}>Why JobHook</h2>
-
-        <p style={{ fontSize: 18, maxWidth: 850, lineHeight: 1.6 }}>
-          JobHook helps job seekers discover new opportunities across Namibia in one place.
-          Explore current openings, browse by city, and apply through the JobHook platform.
+    <main style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
+      
+      {/* HERO */}
+      <section style={{ marginBottom: "40px" }}>
+        <h1 style={{ fontSize: "32px", fontWeight: "bold" }}>
+          Find Jobs in Namibia
+        </h1>
+        <p style={{ color: "#555", marginTop: "10px" }}>
+          Discover real job opportunities in Windhoek, Walvis Bay, Swakopmund and more.
         </p>
-      </div>
+
+        <button
+          style={{
+            marginTop: "20px",
+            padding: "12px 20px",
+            background: "black",
+            color: "white",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Browse Jobs
+        </button>
+      </section>
+
+      {/* CITY BUTTONS */}
+      <section style={{ marginBottom: "40px" }}>
+        <h2>Browse Jobs by City</h2>
+
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "15px" }}>
+          {["Windhoek", "Walvis Bay", "Swakopmund", "Oshakati"].map((city) => (
+            <a
+              key={city}
+              href={`/jobs/${city.toLowerCase().replace(" ", "-")}`}
+              style={{
+                padding: "10px 16px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                textDecoration: "none",
+                color: "black",
+                background: "#f9f9f9",
+              }}
+            >
+              {city}
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* JOB PREVIEW (IMPORTANT) */}
+      <section>
+        <h2>Latest Jobs</h2>
+
+        <div style={{ marginTop: "20px", display: "grid", gap: "15px" }}>
+          
+          {/* Example Job Card */}
+          <div style={{ padding: "15px", border: "1px solid #eee", borderRadius: "10px" }}>
+            <h3>Security Guard</h3>
+            <p style={{ color: "#666" }}>Windhoek • Full-time</p>
+            <p style={{ marginTop: "8px" }}>
+              Looking for a reliable security guard to join our team.
+            </p>
+          </div>
+
+          <div style={{ padding: "15px", border: "1px solid #eee", borderRadius: "10px" }}>
+            <h3>Shop Assistant</h3>
+            <p style={{ color: "#666" }}>Walvis Bay • Part-time</p>
+            <p style={{ marginTop: "8px" }}>
+              Assist customers and manage daily store operations.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
     </main>
   );
 }
