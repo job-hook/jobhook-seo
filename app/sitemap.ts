@@ -3,7 +3,7 @@ import { getDb } from "../lib/firebaseAdmin";
 import { CITIES } from "./data/cities";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.SITE_URL || "https://www.job-hook.com";
+  const baseUrl = process.env.SITE_URL || "https://seo.job-hook.com";
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
