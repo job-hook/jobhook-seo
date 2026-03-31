@@ -53,12 +53,29 @@ export default function HomePage() {
                 background: "#f9f9f9",
               }}
             >
-              View All Jobs
+
               {city}
             </a>
           ))}
         </div>
       </section>
+
+      <div style={{ marginTop: "20px" }}>
+  <a
+    href="/jobs"
+    style={{
+      display: "inline-block",
+      padding: "12px 20px",
+      background: "#2563eb", // blue
+      color: "white",
+      borderRadius: "8px",
+      textDecoration: "none",
+      fontWeight: "500",
+    }}
+  >
+    View All Jobs
+  </a>
+</div>
 
       {/* JOB PREVIEW (IMPORTANT) */}
       <section>
