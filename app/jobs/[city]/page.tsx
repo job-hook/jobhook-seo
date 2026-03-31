@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const baseUrl = "https://seo.job-hook.com";
+
 function prettifyCity(slug: string) {
   return slug
     .split("-")
@@ -14,7 +16,6 @@ export async function generateMetadata({
 }: {
   params: Promise<{ city: string }>;
 }): Promise<Metadata> {
-  const baseUrl = process.env.SITE_URL || "http://localhost:3000";
 
   const { city } = await params;
   const citySlug = (city || "").toLowerCase();
