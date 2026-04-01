@@ -126,7 +126,7 @@ export default async function CityJobs({ params }: PageProps) {
         <p style={{ marginTop: 25 }}>No jobs found for {cityName} yet.</p>
       ) : (
         <div style={{ marginTop: 30, display: "grid", gap: 20 }}>
-          {jobs.map((job) => (
+          {jobs.map((job: any) => (
             <article
               key={job.id}
               style={{
@@ -145,14 +145,11 @@ export default async function CityJobs({ params }: PageProps) {
 
               <p style={{ marginBottom: 8 }}>
                 <strong>Job Type:</strong> {job.jobType}
-              </p>
+              </p> 
 
               <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
-  {(job as any)?.postedAt?.toDate
-    (job as any)?.postedAt.seconds
-    ? getTimeAgo(new Date((job as any).postedAt.seconds * 1000))
-    : "Recently posted"}
-</p>
+              {job.postedAt ? getTimeAgo(job.postedAt.toDate()) : "Recently posted"}
+              </p>
 
               <p style={{ marginBottom: 12 }}>
                 <strong>Salary:</strong> {job.salary}
