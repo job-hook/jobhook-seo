@@ -28,8 +28,9 @@ function getTimeAgo(date: Date) {
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
   if (minutes < 60) return "Just posted";
-  if (hours < 24) return `${hours}h ago`;
-  return `${days}d ago`;
+  if (hours < 24) return "Today";
+  if (days === 1) return "Yesterday";
+  return `${days} days ago`;
 }
 
 export default async function HomePage() {
