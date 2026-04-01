@@ -149,7 +149,8 @@ export default async function CityJobs({ params }: PageProps) {
 
               <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
   {(job as any)?.postedAt?.toDate
-    ? getTimeAgo((job as any).postedAt.toDate())
+    (job as any)?.postedAt.seconds
+    ? getTimeAgo(new Date((job as any).postedAt.seconds * 1000))
     : "Recently posted"}
 </p>
 
