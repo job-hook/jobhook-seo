@@ -132,7 +132,7 @@ export default async function HomePage() {
   style={{
     marginTop: "10px",
     padding: "8px 14px",
-    background: "#819dd8", // nice modern blue
+    background: "#2a66e6", // nice modern blue
     color: "white",
     border: "none",
     borderRadius: "6px",
