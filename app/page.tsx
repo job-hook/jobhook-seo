@@ -13,7 +13,6 @@ async function getJobs() {
 
   const snapshot = await db
     .collection("jobs")
-    .where("isLive", "==", true)
     .orderBy("postedAt", "desc")
     .limit(6)
     .get();
