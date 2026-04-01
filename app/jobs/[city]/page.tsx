@@ -50,6 +50,20 @@ export async function generateMetadata({
   };
 }
 
+function getTimeAgo(date: Date) {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (minutes < 60) return "Just posted";
+  if (hours < 24) return "Today";
+  if (days === 1) return "Yesterday";
+  return `${days} days ago`;
+}
+
 export default async function CityJobs({ params }: PageProps) {
   const { city } = await params;
 
@@ -132,6 +146,12 @@ export default async function CityJobs({ params }: PageProps) {
               <p style={{ marginBottom: 8 }}>
                 <strong>Job Type:</strong> {job.jobType}
               </p>
+
+              <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
+  {(job as any)?.postedAt?.toDate
+    ? getTimeAgo((job as any).postedAt.toDate())
+    : "Recently posted"}
+</p>
 
               <p style={{ marginBottom: 12 }}>
                 <strong>Salary:</strong> {job.salary}
