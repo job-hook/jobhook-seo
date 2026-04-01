@@ -102,46 +102,41 @@ export default async function HomePage() {
 
     <section style={{ marginTop: "40px" }}>
       <h2 style={{ marginBottom: "20px" }}>Latest Jobs</h2>
+      <p>{jobs.length} jobs found</p>
 
       <div style={{ display: "grid", gap: "20px" }}>
-        {jobs.map((job: any) => (
-          <div
-            key={job.id}
-            style={{
-              padding: "15px",
-              border: "1px solid #eee",
-              borderRadius: "10px",
-            }}
-          >
-            <h3>{job.title}</h3>
+  {jobs.length === 0 ? (
+    <p>No jobs found yet.</p>
+  ) : (
+    jobs.map((job: any) => (
+      <div
+        key={job.id}
+        style={{
+          padding: "15px",
+          border: "1px solid #eee",
+          borderRadius: "10px",
+        }}
+      >
+        <h3>{job.title}</h3>
 
-            <p style={{ color: "#666" }}>
-              {job.company || "private employer"}
-            </p>
+        <p style={{ color: "#666" }}>
+          {job.jobCity} • {job.jobType}
+        </p>
 
-            <p style={{ color: "#666" }}>
-              {job.jobCity} • {job.jobType}
-            </p>
+        <p style={{ marginTop: "8px" }}>
+          {job.description?.slice(0, 100)}...
+        </p>
 
-            <p style={{ marginTop: "8px" }}>
-              {job.description?.slice(0, 100)}...
-            </p>
-
-            <p style={{ fontSize: "12px", color: "#999", marginTop: "6px" }}>
-  Posted {new Date(job.postedAt).toLocaleDateString()}
-</p>
-
-            <Link
-              href={`/jobs/${job.jobCity?.toLowerCase()}/${job.id}`}
-            >
-              <button style={{ marginTop: "10px" }}>
-                View Job
-              </button>
-            </Link>
-          </div>
-        ))}
+        <Link href={`/jobs/${job.jobCity?.toLowerCase()}/${job.id}`}>
+          <button style={{ marginTop: "10px" }}>
+            View Job
+          </button>
+        </Link>
       </div>
-    </section>
-  </main>
-);
+    ))
+  )}
+</div>
+</section>
+</main>
+  );
 }
