@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 async function getJobs() {
   const db = getDb();
 
-  const snapshot = await db.collection("jobs").limit(6).get();
+  const snapshot = await db.collection("Jobs").limit(6).get();
 
   return snapshot.docs.map((doc: any) => ({
     id: doc.id,
