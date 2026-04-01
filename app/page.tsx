@@ -128,9 +128,20 @@ export default async function HomePage() {
         </p>
 
         <Link href={`/jobs/${job.jobCity?.toLowerCase()}/${job.id}`}>
-          <button style={{ marginTop: "10px" }}>
-            View Job
-          </button>
+          <button
+  style={{
+    marginTop: "10px",
+    padding: "8px 14px",
+    background: "#819dd8", // nice modern blue
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "14px",
+    cursor: "pointer",
+  }}
+>
+  View Job
+</button>
         </Link>
       </div>
     ))
