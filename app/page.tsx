@@ -19,6 +19,19 @@ async function getJobs() {
   }));
 }
 
+function getTimeAgo(date: Date) {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (minutes < 60) return "Just posted";
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
 export default async function HomePage() {
   const jobs = await getJobs();
   return  (
@@ -119,13 +132,17 @@ export default async function HomePage() {
       >
         <h3>{job.title}</h3>
 
-        <p style={{ color: "#666" }}>
-          {job.jobCity} • {job.jobType}
-        </p>
+<p style={{ color: "#666" }}>
+  {job.jobCity} • {job.jobType}
+</p>
 
-        <p style={{ marginTop: "8px" }}>
-          {job.description?.slice(0, 100)}...
-        </p>
+<p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
+  {job.postedAt ? getTimeAgo(job.postedAt.toDate()) : "Recently posted"}
+</p>
+
+<p style={{ marginTop: "8px" }}>
+  {job.description?.slice(0, 100)}...
+</p>
 
         <Link href={`/jobs/${job.jobCity?.toLowerCase()}/${job.id}`}>
           <button
