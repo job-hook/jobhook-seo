@@ -144,7 +144,22 @@ export default async function CityJobs({ params }: PageProps) {
               </p>
 
               <p style={{ marginTop: 16 }}>
-                <Link href={`/jobs/${citySlug}/${job.id}`}>View full job</Link>
+                <Link
+  href={`/jobs/${citySlug?.toLowerCase()}/${job.id}`}
+  style={{
+    display: "inline-block",
+    marginTop: "12px",
+    padding: "8px 14px",
+    background: "#2563eb",
+    color: "white",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontSize: "14px",
+    fontWeight: "500",
+  }}
+>
+  View full job
+</Link>
               </p>
             </article>
           ))}
