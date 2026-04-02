@@ -74,8 +74,8 @@ export default async function CityJobs({ params }: PageProps) {
   const snapshot = await db
   .collection("Jobs")
   .where("expireAt", ">", new Date())
-  .orderBy("expireAt", "desc")
-  .orderBy("postedAt", "desc")
+  .orderBy("expireAt", "asc")
+  .orderBy("postedAt", "asc")
   .limit(500)
   .get();
 
