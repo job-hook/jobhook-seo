@@ -71,9 +71,15 @@ export default async function CityJobs({ params }: PageProps) {
   const cityName = citySlug ? prettifyCity(citySlug) : "Unknown City";
 
   const db = getDb();
-  const snap = await db.collection("Jobs").limit(500).get();
+  const snapshot = await db
+  .collection("Jobs")
+  .where("expireAt", ">", new Date())
+  .orderBy("expireAt")
+  .orderBy("postedAt", "desc")
+  .limit(500)
+  .get();
 
-  const jobs = snap.docs
+  const jobs = snapshot.docs
     .map((doc) => {
       const data: any = doc.data();
 

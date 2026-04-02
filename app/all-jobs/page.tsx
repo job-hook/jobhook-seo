@@ -19,10 +19,12 @@ async function getAllJobs() {
   const db = getDb();
 
   const snapshot = await db
-    .collection("Jobs")
-    .orderBy("postedAt", "desc")
-    .limit(50)
-    .get();
+  .collection("Jobs")
+  .where("expireAt", ">", new Date())
+  .orderBy("expireAt")
+  .orderBy("postedAt", "desc")
+  .limit(50)
+  .get();
 
   return snapshot.docs.map((doc: any) => ({
     id: doc.id,
