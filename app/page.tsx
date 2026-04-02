@@ -11,12 +11,23 @@ export const metadata: Metadata = {
 async function getJobs() {
   const db = getDb();
 
-  const snapshot = await db.collection("Jobs").limit(6).get();
+  const snapshot = await db
+  .collection("Jobs")
+  .orderBy("postedAt", "desc")
+  .limit(6)
+  .get();
 
-  return snapshot.docs.map((doc: any) => ({
+  const jobs = snapshot.docs
+  .map((doc: any) => ({
     id: doc.id,
     ...doc.data(),
-  }));
+  }))
+  .filter((job: any) => {
+    if (!job.expireAt) return true;
+    return job.expireAt.toDate() > new Date();
+  });
+
+return jobs;
 }
 
 function getTimeAgo(date: Date) {
