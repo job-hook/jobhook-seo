@@ -96,22 +96,37 @@ export default async function HomePage() {
         ))}
       </div>
 
-      <div style={{ marginTop: "20px" }}>
-        <Link
-          href="/jobs"
-          style={{
-            display: "inline-block",
-            padding: "12px 20px",
-            background: "#2563eb",
-            color: "white",
-            borderRadius: "8px",
-            textDecoration: "none",
-            fontWeight: "500",
-          }}
-        >
-          View All Jobs
-        </Link>
-      </div>
+      <div style={{ marginTop: "20px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+  <Link
+    href="#cities"
+    style={{
+      display: "inline-block",
+      padding: "12px 20px",
+      background: "#f3f4f6",
+      color: "#111827",
+      borderRadius: "8px",
+      textDecoration: "none",
+      fontWeight: "500",
+    }}
+  >
+    View Other Cities
+  </Link>
+
+  <Link
+    href="/jobs"
+    style={{
+      display: "inline-block",
+      padding: "12px 20px",
+      background: "#2563eb",
+      color: "white",
+      borderRadius: "8px",
+      textDecoration: "none",
+      fontWeight: "500",
+    }}
+  >
+    View All Jobs
+  </Link>
+</div>
     </section>
 
     <section style={{ marginTop: "40px" }}>
