@@ -103,7 +103,7 @@ export default async function CityJobs({ params }: PageProps) {
         salary: rawSalary,
         status: data?.status,
         approved: data?.approved,
-        postedAt: data.ostedAt
+        postedAt: data.postedAt
       };
     })
     .filter((job) => job.citySlug === citySlug)
