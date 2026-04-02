@@ -98,7 +98,7 @@ export default async function HomePage() {
 
       <div style={{ marginTop: "20px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
   <Link
-    href="#cities"
+    href="/all-jobs"
     style={{
       display: "inline-block",
       padding: "12px 20px",
@@ -109,7 +109,7 @@ export default async function HomePage() {
       fontWeight: "500",
     }}
   >
-    View Other Cities
+    View All Jobs
   </Link>
 
   <Link
@@ -124,7 +124,7 @@ export default async function HomePage() {
       fontWeight: "500",
     }}
   >
-    View All Jobs
+    View Other Cities
   </Link>
 </div>
     </section>
