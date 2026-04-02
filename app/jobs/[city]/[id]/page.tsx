@@ -6,6 +6,20 @@ type PageProps = {
   params: Promise<{ city: string; id: string }>;
 };
 
+function getTimeAgo(date: Date) {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (minutes < 60) return "Just posted";
+  if (hours < 24) return "Today";
+  if (days === 1) return "Yesterday";
+  return `${days} days ago`;
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -127,6 +141,12 @@ export default async function JobPage({ params }: PageProps) {
       <p>
         <b>Salary:</b> {salary}
       </p>
+
+      <p style={{ fontSize: "13px", color: "#6b7280", marginTop: "6px" }}>
+  Posted: {job.postedAt ? getTimeAgo(job.postedAt.toDate()) : "Recently posted"}
+</p>
+
+
       
       <p style={{ marginTop: "20px" }}>
 
