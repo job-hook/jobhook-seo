@@ -21,7 +21,7 @@ export const CITIES = [
   "henties-bay",
   "ruacana",
   "oragemund",
-  "ochikango",
+  "oshikango",
   "aradis",
   "okahao",
   "usakos",
