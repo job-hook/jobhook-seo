@@ -50,6 +50,14 @@ export async function generateMetadata({
   };
 }
 
+function toSafeDate(value: any): Date | null {
+  if (!value) return null;
+  if (value?.toDate) return value.toDate();
+  if (value instanceof Date) return value;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function getTimeAgo(date: Date) {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -64,6 +72,11 @@ function getTimeAgo(date: Date) {
   return `${days} days ago`;
 }
 
+function getPostedMs(value: any) {
+  const d = toSafeDate(value);
+  return d ? d.getTime() : 0;
+}
+
 export default async function CityJobs({ params }: PageProps) {
   const { city } = await params;
 
@@ -73,51 +86,56 @@ export default async function CityJobs({ params }: PageProps) {
   const db = getDb();
   const snapshot = await db
   .collection("Jobs")
-  .where("expireAt", ">", new Date())
-  .orderBy("expireAt", "asc")
-  .orderBy("postedAt", "asc")
+  .orderBy("postedAt", "desc")
   .limit(500)
   .get();
 
   const jobs = snapshot.docs
-    .map((doc) => {
-      const data: any = doc.data();
+  .map((doc: any) => {
+    const data: any = doc.data();
 
-      const rawCity =
-        data?.jobCity ||
-        data?.city ||
-        data?.location ||
-        data?.jobLocation ||
-        "";
+    const rawCity =
+      data?.jobCity ||
+      data?.city ||
+      data?.location ||
+      data?.jobLocation ||
+      "";
 
-      const rawTitle = data?.title || "Job Opportunity";
-      const rawCompany = data?.companyName || data?.company || "Company";
-      const rawDescription = data?.description || "No description provided.";
-      const rawJobType = data?.jobType || "Not specified";
-      const rawSalary = data?.salary || "Not specified";
+    const rawTitle = data?.title || "Job Opportunity";
+    const rawCompany = data?.companyName || data?.company || "Company";
+    const rawDescription = data?.description || "No description provided.";
+    const rawJobType = data?.jobType || "Not specified";
+    const rawSalary = data?.salary || "Not specified";
 
-      const docCitySlug = slugifyCity(rawCity);
+    const docCitySlug = (rawCity || "").toLowerCase().trim().replace(/\s+/g, "-");
 
-      return {
-        id: doc.id,
-        citySlug: docCitySlug,
-        cityName: rawCity || cityName,
-        title: rawTitle,
-        company: rawCompany,
-        description: rawDescription,
-        jobType: rawJobType,
-        salary: rawSalary,
-        status: data?.status,
-        approved: data?.approved,
-        postedAt: data.postedAt
-      };
-    })
-    .filter((job) => job.citySlug === citySlug)
-    .filter((job) => {
-      if (job.status && job.status !== "approved") return false;
-      if (job.approved === false) return false;
-      return true;
-    });
+    return {
+      id: doc.id,
+      citySlug: docCitySlug,
+      cityName: rawCity || cityName,
+      title: rawTitle,
+      company: rawCompany,
+      description: rawDescription,
+      jobType: rawJobType,
+      salary: rawSalary,
+      status: data?.status,
+      approved: data?.approved,
+      postedAt: data?.postedAt,
+      expireAt: data?.expireAt,
+    };
+  })
+  .filter((job: any) => {
+    const expireDate = toSafeDate(job.expireAt);
+    if (!expireDate) return true;
+    return expireDate > new Date();
+  })
+  .filter((job: any) => job.citySlug === citySlug)
+  .filter((job: any) => {
+    if (job.status && job.status !== "approved") return false;
+    if (job.approved === false) return false;
+    return true;
+  })
+  .sort((a: any, b: any) => getPostedMs(b.postedAt) - getPostedMs(a.postedAt));
 
   return (
     <main style={{ padding: 30, fontFamily: "system-ui", maxWidth: 1000, margin: "0 auto" }}>
@@ -155,13 +173,7 @@ export default async function CityJobs({ params }: PageProps) {
               </p> 
 
               <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
-  {job.postedAt
-    ? getTimeAgo(
-        job.postedAt.toDate
-          ? job.postedAt.toDate()
-          : new Date(job.postedAt)
-      )
-    : "Recently posted"}
+  {toSafeDate(job.postedAt) ? getTimeAgo(toSafeDate(job.postedAt) as Date) : "Recently posted"}
 </p>
 
               <p style={{ marginBottom: 12 }}>

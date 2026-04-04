@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { getDb } from "@/lib/firebaseAdmin";
 
+function toSafeDate(value: any): Date | null {
+  if (!value) return null;
+  if (value?.toDate) return value.toDate();
+  if (value instanceof Date) return value;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function getTimeAgo(date: Date) {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -15,21 +23,34 @@ function getTimeAgo(date: Date) {
   return `${days} days ago`;
 }
 
+function getPostedMs(value: any) {
+  const d = toSafeDate(value);
+  return d ? d.getTime() : 0;
+}
+
 async function getAllJobs() {
   const db = getDb();
 
   const snapshot = await db
-  .collection("Jobs")
-  .where("expireAt", ">", new Date())
-  .orderBy("expireAt")
+ .collection("Jobs")
   .orderBy("postedAt", "desc")
   .limit(50)
   .get();
 
-  return snapshot.docs.map((doc: any) => ({
+
+const jobs = snapshot.docs
+  .map((doc: any) => ({
     id: doc.id,
     ...doc.data(),
-  }));
+  }))
+  .filter((job: any) => {
+    const expireDate = toSafeDate(job.expireAt);
+    if (!expireDate) return true;
+    return expireDate > new Date();
+  })
+  .sort((a: any, b: any) => getPostedMs(b.postedAt) - getPostedMs(a.postedAt));
+
+return jobs;
 }
 
 export default async function AllJobsPage() {
@@ -69,8 +90,8 @@ export default async function AllJobsPage() {
               </p>
 
               <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
-                {job.postedAt ? getTimeAgo(job.postedAt.toDate()) : "Recently posted"}
-              </p>
+  {toSafeDate(job.postedAt) ? getTimeAgo(toSafeDate(job.postedAt) as Date) : "Recently posted"}
+</p>
 
               <p style={{ marginBottom: "12px" }}>
                 <strong>Salary:</strong> {job.salary}
