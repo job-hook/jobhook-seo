@@ -24,31 +24,15 @@ type PageProps = {
   params: Promise<{ city: string }>;
 };
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { city } = await params;
-  const citySlug = (city || "").toLowerCase();
-  const cityName = citySlug ? prettifyCity(citySlug) : "Unknown City";
-
-  const title = `Jobs in ${cityName}, Namibia | JobHook`;
-  const description = `Find the latest jobs in ${cityName}, Namibia. Browse new job opportunities, hiring now positions, and entry-level jobs across multiple industries on JobHook.`;
+export async function generateMetadata({ params }: any) {
+  const city = params.city;
 
   return {
-    title,
-    description,
-    alternates: {
-      canonical: `${baseUrl}/jobs/${citySlug}`,
-    },
-    openGraph: {
-      title,
-      description,
-      url: `${baseUrl}/jobs/${citySlug}`,
-      siteName: "JobHook",
-      type: "website",
-    },
+    title: `Jobs in ${city} Namibia | JobHook`,
+    description: `Browse the latest jobs in ${city}, Namibia. Updated daily on JobHook.`,
   };
 }
+ 
 
 function toSafeDate(value: any): Date | null {
   if (!value) return null;
