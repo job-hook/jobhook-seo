@@ -25,11 +25,22 @@ type PageProps = {
 };
 
 export async function generateMetadata({ params }: any) {
-  const city = params.city;
+  const rawCity = params.city;
+
+  const city =
+    rawCity && rawCity !== "undefined" && rawCity !== "null"
+      ? prettifyCity(rawCity)
+      : "Namibia";
 
   return {
-    title: `Jobs in ${city} Namibia | JobHook`,
-    description: `Browse the latest jobs in ${city}, Namibia. Updated daily on JobHook.`,
+    title:
+      city === "Namibia"
+        ? "Jobs in Namibia | JobHook"
+        : `Jobs in ${city}, Namibia | JobHook`,
+    description:
+      city === "Namibia"
+        ? "Find the latest jobs in Namibia. Browse opportunities in Windhoek, Walvis Bay, Swakopmund, Oshakati and more."
+        : `Browse the latest jobs in ${city}, Namibia. Updated daily on JobHook.`,
   };
 }
  

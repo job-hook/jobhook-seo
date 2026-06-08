@@ -23,7 +23,12 @@ function getTimeAgo(date: Date) {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { city, id } = await params;
+const { city: rawCity, id } = await params;
+
+const city =
+  rawCity && rawCity !== "undefined" && rawCity !== "null"
+    ? rawCity
+    : "Namibia";
   const db = getDb();
  const doc = await db.collection("Jobs").doc(id).get();
 
@@ -36,7 +41,10 @@ export async function generateMetadata({
 
   const job = doc.data() as any;
 return {
-  title: `${job?.title || "Job"} in ${city} | JobHook`,
+ title:
+  city === "Namibia"
+    ? `${job?.title || "Job"} in Namibia | JobHook`
+    : `${job?.title || "Job"} in ${city}, Namibia | JobHook`,
   description:
     job?.description?.slice(0, 150) ||
     `Find jobs in ${city} on JobHook.`,
@@ -44,7 +52,12 @@ return {
 }
 
 export default async function JobPage({ params }: PageProps) {
-  const { city, id } = await params;
+  const { city: rawCity, id } = await params;
+
+const city =
+  rawCity && rawCity !== "undefined" && rawCity !== "null"
+    ? rawCity
+    : "Namibia";
 
   const db = getDb();
   const doc = await db.collection("Jobs").doc(id).get();
