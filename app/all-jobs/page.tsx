@@ -46,6 +46,19 @@ export default async function AllJobsPage({ searchParams }: PageProps) {
 
   return (
     <main style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
+      <Link
+        href="/"
+        style={{
+          display: "inline-block",
+          marginBottom: "18px",
+          color: "#2563eb",
+          textDecoration: "none",
+          fontWeight: 600,
+        }}
+      >
+        &larr; Back to Home
+      </Link>
+
       <h1 style={{ fontSize: "40px", marginBottom: "10px" }}>
         All Jobs in Namibia
       </h1>
