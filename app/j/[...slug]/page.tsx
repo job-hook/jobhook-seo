@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/firebaseAdmin";
+import { getJobCitySlug, isActiveJob } from "@/lib/seoJobs";
 
 type PageProps = {
   params: Promise<{
@@ -29,12 +30,9 @@ export default async function JobRedirectPage({ params }: PageProps) {
   }
 
   const job = jobSnap.data() as Record<string, unknown>;
-  const city = String(job?.city || job?.jobCity || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-");
+  const city = getJobCitySlug(job);
 
-  if (!city) {
+  if (!city || !isActiveJob(job)) {
     redirect("/jobs");
   }
 

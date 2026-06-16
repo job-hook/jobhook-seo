@@ -1,75 +1,116 @@
 import Link from "next/link";
 import { getDb } from "@/lib/firebaseAdmin";
+import {
+  formatPostedAge,
+  getCompany,
+  getDescription,
+  getJobCity,
+  getJobTitle,
+  getJobType,
+  getPostedMs,
+  getSalary,
+  isActiveJob,
+  type JobRecord,
+  jobDetailPath,
+  matchesJobSearch,
+} from "@/lib/seoJobs";
 
-function toSafeDate(value: any): Date | null {
-  if (!value) return null;
-  if (value?.toDate) return value.toDate();
-  if (value instanceof Date) return value;
-  const d = new Date(value);
-  return isNaN(d.getTime()) ? null : d;
-}
+type PageProps = {
+  searchParams?: Promise<{ q?: string }>;
+};
 
-function getTimeAgo(date: Date) {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-
-  const minutes = Math.floor(diff / (1000 * 60));
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (minutes < 60) return "Just posted";
-  if (hours < 24) return "Today";
-  if (days === 1) return "Yesterday";
-  return `${days} days ago`;
-}
-
-function getPostedMs(value: any) {
-  const d = toSafeDate(value);
-  return d ? d.getTime() : 0;
-}
-
-async function getAllJobs() {
+async function getAllJobs(query: string) {
   const db = getDb();
 
   const snapshot = await db
- .collection("Jobs")
-  .orderBy("postedAt", "desc")
-  .limit(50)
-  .get();
+    .collection("Jobs")
+    .orderBy("postedAt", "desc")
+    .limit(5000)
+    .get();
 
-
-const jobs = snapshot.docs
-  .map((doc: any) => ({
-    id: doc.id,
-    ...doc.data(),
-  }))
-  .filter((job: any) => {
-    const expireDate = toSafeDate(job.expireAt);
-    if (!expireDate) return true;
-    return expireDate > new Date();
-  })
-  .sort((a: any, b: any) => getPostedMs(b.postedAt) - getPostedMs(a.postedAt));
-
-return jobs;
+  return snapshot.docs
+    .map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+    .filter((job: JobRecord) => isActiveJob(job))
+    .filter((job: JobRecord) => matchesJobSearch(job, query))
+    .sort((a: JobRecord, b: JobRecord) => getPostedMs(b) - getPostedMs(a))
+    .slice(0, 50);
 }
 
-export default async function AllJobsPage() {
-  const jobs = await getAllJobs();
+export default async function AllJobsPage({ searchParams }: PageProps) {
+  const params = searchParams ? await searchParams : {};
+  const query = typeof params?.q === "string" ? params.q.trim() : "";
+  const jobs = await getAllJobs(query);
 
   return (
     <main style={{ padding: "40px", maxWidth: "900px", margin: "0 auto" }}>
-      <h1 style={{ fontSize: "40px", marginBottom: "10px" }}>All Jobs in Namibia</h1>
+      <h1 style={{ fontSize: "40px", marginBottom: "10px" }}>
+        All Jobs in Namibia
+      </h1>
 
-      <p style={{ color: "#555", marginBottom: "30px", lineHeight: 1.6 }}>
-        Browse all available jobs across Namibia, sorted from newest to oldest.
+      <p style={{ color: "#555", marginBottom: "24px", lineHeight: 1.6 }}>
+        Browse active jobs across Namibia, sorted from newest to oldest.
       </p>
+
+      <form
+        action="/all-jobs"
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "30px",
+          flexWrap: "wrap",
+        }}
+      >
+        <input
+          type="search"
+          name="q"
+          defaultValue={query}
+          placeholder="Search by job title, company, keyword, or city"
+          aria-label="Search jobs"
+          style={{
+            flex: "1 1 280px",
+            padding: "12px 14px",
+            border: "1px solid #d1d5db",
+            borderRadius: "8px",
+            fontSize: "15px",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            padding: "12px 18px",
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Search
+        </button>
+        {query ? (
+          <Link
+            href="/all-jobs"
+            style={{
+              padding: "12px 14px",
+              color: "#374151",
+              textDecoration: "none",
+            }}
+          >
+            Clear
+          </Link>
+        ) : null}
+      </form>
 
       <div style={{ display: "grid", gap: "20px" }}>
         {jobs.length === 0 ? (
-          <p>No jobs found yet.</p>
+          <p>{query ? `No jobs found for "${query}".` : "No jobs found yet."}</p>
         ) : (
-          jobs.map((job: any) => (
-            <div
+          jobs.map((job: JobRecord) => (
+            <article
               key={job.id}
               style={{
                 padding: "20px",
@@ -78,33 +119,40 @@ export default async function AllJobsPage() {
               }}
             >
               <h2 style={{ fontSize: "24px", marginBottom: "8px" }}>
-                {job.title}
+                {getJobTitle(job)}
               </h2>
 
               <p style={{ marginBottom: "8px" }}>
-                <strong>{job.company}</strong> — {job.jobCity}
+                <strong>{getCompany(job)}</strong> -{" "}
+                {getJobCity(job) || "Namibia"}
               </p>
 
               <p style={{ marginBottom: "8px" }}>
-                <strong>Job Type:</strong> {job.jobType}
+                <strong>Job Type:</strong> {getJobType(job)}
               </p>
 
-              <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "6px" }}>
-  {toSafeDate(job.postedAt) ? getTimeAgo(toSafeDate(job.postedAt) as Date) : "Recently posted"}
-</p>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "#6b7280",
+                  marginTop: "6px",
+                }}
+              >
+                Posted {formatPostedAge(job.postedAt || job.createdAt || job.datePosted)}
+              </p>
 
               <p style={{ marginBottom: "12px" }}>
-                <strong>Salary:</strong> {job.salary}
+                <strong>Salary:</strong> {getSalary(job)}
               </p>
 
               <p style={{ lineHeight: 1.6 }}>
-                {job.description?.length > 220
-                  ? `${job.description.slice(0, 220)}...`
-                  : job.description}
+                {getDescription(job).length > 220
+                  ? `${getDescription(job).slice(0, 220)}...`
+                  : getDescription(job)}
               </p>
 
               <Link
-                href={`/jobs/${job.jobCity?.toLowerCase()}/${job.id}`}
+                href={jobDetailPath(job)}
                 style={{
                   display: "inline-block",
                   marginTop: "12px",
@@ -119,7 +167,7 @@ export default async function AllJobsPage() {
               >
                 View full job
               </Link>
-            </div>
+            </article>
           ))
         )}
       </div>
